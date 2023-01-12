@@ -20,10 +20,10 @@ void adc_setup(void) // ADC1 and 2
     ADC1->CR |= ADC_CR_ADCAL;                   // start ADC calibration cycle
     while (ADC1->CR & ADC_CR_ADCAL);            // wait for calibration to complete
 
-    ADC1->SQR1 |= (1 << 6); //ADC_SQR1_SQ1_1;               //(1 << 6) 1st conversion in regular sequence!!!
+    ADC1->SQR1 |= ADC_SQR1_SQ1_0;               //(1 << 6) 1st conversion in regular sequence!!!
 
-    //ADC12_COMMON->CCR |= ADC_CCR_DUAL_1;        //00110: Regular simultaneous mode only
-    //ADC12_COMMON->CCR |= ADC_CCR_DUAL_2;        //00110: Regular simultaneous mode only
+    ADC12_COMMON->CCR |= ADC_CCR_DUAL_1;        //00110: Regular simultaneous mode only
+    ADC12_COMMON->CCR |= ADC_CCR_DUAL_2;        //00110: Regular simultaneous mode only
 
     ADC1->CR |= ADC_CR_ADEN;                    // enable the ADC.
     while (!(ADC1->ISR & ADC_ISR_ADRDY));       // check if enabled
@@ -32,6 +32,7 @@ void adc_setup(void) // ADC1 and 2
 
 void take_sample(void)
 {
-    ADC1->CR |= ADC_CR_ADSTART; //start conversion
+    ADC1->CR |= ADC_CR_ADSTART;                 //start conversion
     adc_value[0] = ADC1->DR;
+    ADC1->CR |= ADC_CR_ADSTP;                   //stop concersion
 }
