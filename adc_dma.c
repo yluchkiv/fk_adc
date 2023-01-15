@@ -15,7 +15,10 @@ void adc_setup(void) // ADC1 and 2
 {
     ADC12_COMMON->CCR |= ADC12_CCR_CKMODE_0;    // 0b01 // Set ADC clock
     ADC1->CFGR |= ADC_CFGR_DMAEN;               // DMA mode enable
-    ADC1->CFGR &= ~ADC_CFGR_DMACFG;             // DMA One Shot Mode selected
+    //ADC1->CFGR &= ~ADC_CFGR_DMACFG;             // DMA One Shot Mode selected
+
+    ADC1->CFGR |= ADC_CFGR_DMACFG;              //1: DMA Circular Mode selected
+    ADC1->CFGR &= ~ADC_CFGR_CONT;                // 0: Continuous conversion mode OFF
     ADC1->CR &= ~ADC_CR_ADEN;                   // disable the ADC.
     ADC1->CR |= ADC_CR_ADVREGEN_0;              // 01: ADC Voltage regulator enabled.
 
@@ -29,6 +32,7 @@ void adc_setup(void) // ADC1 and 2
 
     ADC1->CR |= ADC_CR_ADEN;                    // enable the ADC.
     while (!(ADC1->ISR & ADC_ISR_ADRDY));       // check if enabled
+
   
 }
 
@@ -50,13 +54,15 @@ void dma_setup(void)
 	DMA1_Channel1->CCR &= ~DMA_CCR_TCIE;        // 0: Transfer complete interrupt disabled
 	
 	DMA1_Channel1->CCR |= DMA_CCR_EN;           // Activate the channel in the DMA control register
+    
 
 }
 
 void take_sample(void)
 {
+    
     ADC1->CR |= ADC_CR_ADSTART;                 //start conversion
-    //adc_value[0] = ADC1->DR;
+    adc_value = ADC1->DR;
 
     ADC1->CR |= ADC_CR_ADSTP;                   //stop concersion
 

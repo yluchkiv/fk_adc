@@ -3,17 +3,21 @@
 
 static void clock_init(void);
 
+void myDelay(void);
+
 int main()
 {
     clock_init();
 
 	gpio_setup();
 	adc_setup();
-	dma_setup();
+	//dma_setup();
 
     while(1)
     {
+		myDelay();
 		take_sample();
+	
     }
     return 0;
 }
@@ -25,6 +29,12 @@ static void clock_init(void)
 	{
 
 	}
+
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN ; 	// on 
+    __IO uint32_t tmpreg = RCC->AHBENR & (~RCC_AHBENR_GPIOAEN);
+    (void)tmpreg;
+
+    GPIOA->MODER |= GPIO_MODER_MODER5_0;  	// 0100 0000 0000 we put that value into moder
 
     /*FLASH*/
 	FLASH->ACR|= FLASH_ACR_PRFTBE;			// enabling FLASH prefatch buffer
@@ -49,3 +59,15 @@ static void clock_init(void)
 	
     while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) { } // wait for switch status
 }
+
+void myDelay(void)
+{
+    for(volatile long i = 0; i < 1000000; i++)
+    {
+
+	}
+	GPIOA->ODR ^= GPIO_ODR_5;
+    
+
+}
+
