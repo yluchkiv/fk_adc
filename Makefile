@@ -12,8 +12,11 @@ startup.o: startup.c Makefile
 adc_dma.o: adc_dma.c Makefile
 	arm-none-eabi-gcc -c adc_dma.c ${CC_FLAGS}
 
-f.elf: startup.o main.o adc_dma.o Makefile linker_script.ld
-	arm-none-eabi-gcc -o f.elf main.o startup.o adc_dma.o -specs=nosys.specs -T linker_script.ld -nostartfiles ${CC_FLAGS}
+uart_diag.o: uart_diag.c Makefile
+	arm-none-eabi-gcc -c uart_diag.c ${CC_FLAGS}
+
+f.elf: startup.o main.o adc_dma.o uart_diag.o Makefile linker_script.ld
+	arm-none-eabi-gcc -o f.elf main.o startup.o adc_dma.o uart_diag.o -specs=nosys.specs -T linker_script.ld -nostartfiles ${CC_FLAGS}
 	arm-none-eabi-objdump -D f.elf > f.elf.dump
 	arm-none-eabi-objcopy -O ihex $@ f.elf.ihex
 	arm-none-eabi-objcopy -O srec $@ f.elf.srec
